@@ -60,7 +60,7 @@ func (b *RCS7100) OpenStream() {
 		os.Setenv("ALSOFT_LOGLEVEL", "0")
 	}
 
-	if stream, err := gumblemalgo.New(b.Client); err != nil {
+	if stream, err := gumblemalgo.New(b.Client, b.PlaybackAudioDevice, b.CaptureAudioDevice); err != nil {
 		fmt.Fprintf(os.Stderr, "Stream open error (%s)\n", err)
 		os.Exit(1)
 	} else {

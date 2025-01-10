@@ -12,26 +12,43 @@ import (
 	"github.com/iu0jgo/gumble/gumble"
 	_ "github.com/iu0jgo/gumble/opus"
 	"github.com/iu0jgo/rcs7100/internal/engine"
+	"github.com/spf13/viper"
 )
 
 func main() {
 	fmt.Println("Remote Control System for IC-7100")
 
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.SetConfigType("yaml")   // REQUIRED if the config file does not have the extension in the name
+	// viper.AddConfigPath("/etc/appname/")   // path to look for the config file in
+	// viper.AddConfigPath("$HOME/.appname")  // call multiple times to add many search paths
+	viper.AddConfigPath(".")    // optionally look for config in the working directory
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+
 	// Command line flags
-	server := flag.String("server", "localhost:64738", "the server to connect to")
+	// server := flag.String("server", "localhost:64738", "the server to connect to")
+	address := viper.GetString("server.address")
 	username := flag.String("username", "", "the username of the client")
 	password := flag.String("password", "", "the password of the server")
 	insecure := flag.Bool("insecure", true, "skip server certificate verification")
 	certificate := flag.String("certificate", "", "PEM encoded certificate and private key")
 	channel := flag.String("channel", "root", "mumble channel to join by default")
+	// Adudio devices
+	playbackAudioDevice := viper.GetString("audio.playbackDevice")
+	captureAudioDevice := viper.GetString("audio.captureDevice")
 
 	flag.Parse()
 
 	// Initialize
 	b := engine.RCS7100{
-		Config:      gumble.NewConfig(),
-		Address:     *server,
-		ChannelName: *channel,
+		Config:              gumble.NewConfig(),
+		Address:             address,
+		ChannelName:         *channel,
+		PlaybackAudioDevice: playbackAudioDevice,
+		CaptureAudioDevice:  captureAudioDevice,
 	}
 
 	// if no username specified, lets just autogen a random one

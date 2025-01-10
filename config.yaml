@@ -1,0 +1,5 @@
+server:
+  address: '192.168.178.201:64738'
+audio:
+  playbackDevice: 'Plantronics Blackwire 3225 Series'
+  captureDevice: 'Plantronics Blackwire 3225 Series'
